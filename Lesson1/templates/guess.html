@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Guess a number</h1>
+<p></p>
+<form method=POST action=/guess>
+  Guess a number<br>
+  <select name=number><option>1<option>2<option>3<option>4<option>5<option>6<option>7<option>8<option>9<option>10<option>11<option>12<option>13<option>14<option>15<option>16<option>17<option>18<option>19</select>
+  <input type=submit value="Guess!">
+</form>
+
+<h2>{{result}}</h2>
+
+
+<h1>Source code</h1>
+
+What is wrong with the following source code?
+
+<pre>
+@app.route('/guess', methods=['GET','POST'])
+def guess():
+    if request.method == 'GET':
+        return render_template('guess.html', numtries = '0')
+
+    time.sleep(2)
+    
+    
+    r = random.randrange(1,20)
+    number = request.form.get('number')
+    if number == None:
+        return render_template('guess.html',result = "Your input is ignored")
+    else:
+        number = int(number)
+    if number in range(1,r):
+        return render_template('guess.html',result = "the number is too low!")
+    if number in range (r+1,20):
+        return render_template('guess.html',result = "the number is too high!")
+    else:
+        return render_template('guess.html', result = "%d is correct!" % (number))  
+</pre>
+
+
+</body>
+</html>

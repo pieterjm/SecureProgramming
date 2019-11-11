@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Upload a file</h1>
+        
+      <form action = "/upload" method = "POST" 
+         enctype = "multipart/form-data">
+         <input type = "file" name = "file" />
+         <input type = "submit"/>
+      </form>
+
+      <h1>
+	{{result}}
+      </h1>
+
+<h1>Source code</h1>
+
+Where is the problem?
+      
+      <pre>
+@app.route('/upload', methods=['GET','POST'])
+def upload():
+    if request.method == 'GET':
+        return render_template('upload.html')
+
+    f = request.files['file']
+
+    if f.content_type != 'image/jpeg' and f.content_type != 'image/gif':
+        return render_template('upload.html', result = "Only uploading of images is allowed")
+        
+    f.save('static/' + f.filename)
+        return render_template('upload.html', result = 'File uploaded succesfully.')
+</pre>
+      
+   </body>
+</html>
