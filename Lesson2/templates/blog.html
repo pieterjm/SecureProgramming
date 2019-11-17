@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Is craig wright a fraud?</h1>
+<p>Craig Wright is a fraudster who claims to be the creator of Bitcoin, Satoshi Nakamoto. There has been no concrete evidence presented in favour of Wright's claim. There is overwhelming evidence against his claim, yet Wright was able to get lots of media coverage by sympathetic journalists with a limited understanding of technology after Wright tricked or bribed a couple of Bitcoin figureheads such as Gavin Andresen to back his claims without themselves having access to any supporting evidence. The Bitcoin community has a duty to explain our technology - we can't expect everyone to understand cryptographic proof -, hence this page can be a useful list of resources. </p>
+<p>Source: <a href="https://en.bitcoin.it/wiki/Craig_Wright">The Bitcoin Wiki</a></p>
+
+<h2>What do you think?</h2>
+{% for comment in comments %}
+<p><i>{{comment.user}}</i> wrote: <br>
+{{comment.comment|safe}}</p>
+
+{% endfor %}
+
+
+<h2>Add comment</h2>
+
+<form method="POST" action="/blog">
+  <table border=0>
+    <TR><td>Name</td><td><input name="user" value=""></td></tr>
+    <tr><td>Comment</td><td><textarea rows="10" cols="80" name="comment"></textarea></td></tr>
+    <tr><td></td><td><input type="submit" value="Comment"></td></tr>
+  </table>
+</form>
+
+
+<h2>Sources</h2>
+
+<h3>Source of the backend application</h3>
+<pre>
+@app.route('/blog', methods=['GET','POST'])
+def blog():
+    if request.method == 'GET':
+        return render_template('blog.html',comments = comments)
+
+    comment = request.form.get('comment')
+    user = request.form.get('user')
+
+    # remove all html tags from the comment and the user in order to prevent XSS
+    comment = re.sub(r"\<[a-zA-Z][^\<\>]*>",'',comment)
+    user = re.sub(r"\<[a-zA-Z][^\<\>]*>",'',user)
+
+    comments.append({'user':user,'comment':comment})
+
+    return render_template('blog.html', comments = comments)  
+</pre>
+
+
+</body>
+</html>

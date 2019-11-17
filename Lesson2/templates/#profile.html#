@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <body>    
+
+    <h1>Edit your profile</h1>
+
+    Store your personal details so that we can personalize this website.
+    
+    <div id="form" style="display:none">
+      <form>
+	What is your name: <input name=name id=name>
+      </form>
+      <button onclick="store()" type="button">Store</button>
+    </div>
+    
+
+    <span id="result"></span>
+
+  
+    <script>
+      function store() {
+	  if (typeof(Storage) !== "undefined") {
+	      document.getElementById("result").innerHTML = localStorage.setItem("name", document.getElementById("name").value);
+	      document.getElementById("form").style.display = "none";
+	      document.getElementById("result").innerHTML = "Hi " + localStorage.getItem("name");
+	      document.getElementById("result").style.display = "block";
+	  }
+      }
+
+      
+      // Check browser support
+      if (typeof(Storage) !== "undefined") {
+	  // Retrieve
+	  document.getElementById("result").innerHTML = "Hi " + localStorage.getItem("name");
+
+	  // Store
+	  if ( localStorage.name ) {
+	      document.getElementById("form").style.display = "none";
+	      document.getElementById("result").style.display = "block";
+	  } else {
+	      document.getElementById("form").style.display = "block";
+	      document.getElementById("result").style.display = "none";
+	      
+	  }
+
+      } else {
+	  document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+      }
+    </script>
+
+    <h2>Source code</h2>
+
+    Use 'view page source' to view the JavaScript source code of this page.
+    
+    
+
+</body>
+</html>

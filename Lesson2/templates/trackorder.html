@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Order status</h1>
+<p>On this page, you can track your order by supplying an order id. An orderid starts with 'order', followed by five digits. For example: 'order12345'. Your goal is to find the weakness in this order tracking function.</p>
+<form method=GET action=/trackorder>
+  Enter your order id<br>
+  <input name=orderid value="" pattern="order[0-9]{5}" required title="A valid order number starts with 'order' followed by 5-digits. For example: order12345">
+  <input type=submit value="Track!">
+</form>
+
+{% if orderid is not none %}
+<br>Status of order with orderid: <b>{{orderid}}</b> is <b>{{orderstatus}}</b><br><br>
+
+
+<a href=/trackorder?orderid={{orderid}}>Check again</a>
+
+{% endif %}
+
+<h1>Source code</h1>
+
+Source of backend application
+
+<pre>
+@app.route('/trackorder', methods=['GET'])
+def guess():
+    if request.method == 'GET':
+        return render_template('trackorder.html',orderid = request.args.get('orderid'))
+</pre>
+
+Source of the web page
+
+<pre>
+
+&lt;form method=GET action=/trackorder>
+  Enter your order id&lt;br>
+  &lt;input name=orderid value="" pattern="order[0-9]{5}" required title="A valid order number like order12345">
+  &lt;input type=submit value="Track!">
+&lt;/form>
+
+No information found for order: &lt;b>&lcub;&lcub;orderid&rcub;&rcub;&lt;/b>. It could take some time before all order information is available.&lt;br>
+
+&lt;a href=/trackorder?orderid=&lcub;&lcub;orderid&rcub;&rcub;>Check again&lt;/a>
+
+</pre>
+
+
+
+</body>
+</html>

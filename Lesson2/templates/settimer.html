@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>Timer</h1>
+    <p>
+      Configure and start the following timer. Try to trigger the Cross-Site Scripting vulnerability.
+    </p>
+    <form action="" method="GET">
+      <input id="timer" name="timer" value="3">
+      <input id="button" type="submit" value="Create timer"> 
+    </form>
+
+    <h2>Sources</h2>
+
+    <h3>Source of the backend application</h3>
+    
+    <PRE>
+@app.route('/timer', methods=['GET'])
+def timer():
+  timer = request.args.get('timer')
+if timer:
+  return render_template('timer.html', timer = timer )
+else:
+  return render_template('settimer.html')
+    </PRE>
+
+    <h3>Source of settimer.html</h3>
+
+    <pre>
+{{ include_raw('settimer.html') }}
+    </pre>
+
+    <h3>Source of timer.html</h3>
+    <pre>
+{{ include_raw('timer.html') }}
+    </pre>
+    
+  </body>
+</html>
+      
