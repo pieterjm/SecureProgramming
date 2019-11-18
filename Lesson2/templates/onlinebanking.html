@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Bank dashboard</h1>
+<p>Current user: '{{ current_user }}'</p>
+
+
+
+
+{% if action_login %}
+<h2>Login form</h2>
+
+<p>{{ error_response}}</p>
+
+<p>Tip: <br>
+  - Username: oma, Password: correcthorsebatterystaple <br>
+  - Username: henk, Password: omaisthebest
+</p>
+
+<form method=POST action=/banklogin>
+  <table border=0>
+    <tr>
+      <td>Username</td>
+      <td>:</td>
+        <td><input name=username value= ></td>
+      </tr>
+    <tr>
+      <td>Password</td>
+      <td>:</td>
+      <td><input name=password type=password value= ></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td><input type=submit value="Login"></td>
+    </tr>
+  </table>
+</form>
+
+{% else %}
+  <h2>Transactions</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>To</th>
+        <th>From</th>
+        <th>Amount</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transaction in transactions %}
+      <tr>
+        <td>{{transaction.to}}</td>
+        <td>{{transaction.from}}</td>
+        <td>{{transaction.amount}}</td>
+        <td>{{transaction.description}}</td>
+      </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+
+  <h2>Transfer money</h2>
+  <form method=POST action=/transfer>
+    <table border=0>
+      <tr>
+        <td>To</td>
+        <td>:</td>
+          <td><input name=to value= ></td>
+      </tr>
+      <tr>
+        <td>Amount</td>
+          <td>:</td>
+          <td><input name=amount value= ></td>
+      </tr>
+      <tr>
+          <td>Description</td>
+          <td>:</td>
+          <td><input name=description value= ></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td><input type=submit value="Submit transfer"></td>
+      </tr>
+    </table>
+  </form>
+
+{% endif %}
+
+<h1>Source code</h1>
+
+Where is the problem?
+
+<pre>
+    users = []
+    argon2_hash_oma = argon2.argon2_hash(password=str("correcthorsebatterystaple"), salt="XQEXFggkPcw9BtuGkn4ELm4a7r7MUKTjBW2fjaVv6ou8mJ9ZrfEQBYhiGqQ6LzRz", t=16, m=8, p=1, buflen=128, argon_type=argon2.Argon2Type.Argon2_i)
+    base64_encoded_password = str(base64.b64encode(argon2_hash_oma), "utf-8")
+    users.append({'username':'oma', 'password_hash': base64_encoded_password, 'salt': 'XQEXFggkPcw9BtuGkn4ELm4a7r7MUKTjBW2fjaVv6ou8mJ9ZrfEQBYhiGqQ6LzRz', 'session': str(uuid.uuid4()) })
+
+    argon2_hash_henk = argon2.argon2_hash(password=str("omaisthebest"), salt="QRLKkjpwNTxAEhiBKTAEaUhmhzPzRrZDsghLiNXVShEPAJLHdfJMULzTCDUSHbjL", t=16, m=8, p=1, buflen=128, argon_type=argon2.Argon2Type.Argon2_i)
+    base64_encoded_password = str(base64.b64encode(argon2_hash_henk), "utf-8")
+    users.append({'username':'henk', 'password_hash': base64_encoded_password, 'salt': 'QRLKkjpwNTxAEhiBKTAEaUhmhzPzRrZDsghLiNXVShEPAJLHdfJMULzTCDUSHbjL', 'session': str(uuid.uuid4()) })
+
+    transactions = [
+        {'to':'henk', 'from':'oma', 'amount': '10', 'description': 'Verjaardag 🎂'}
+    ]
+
+    @app.route('/banklogin', methods=['GET','POST'])
+    def banklogin():
+        if request.method == 'GET':
+            return redirect("/onlinebanking")
+
+        username = request.form.get('username')
+        password = request.form.get('password')
+        new_session_value = ''
+        current_user = ''
+        action_login = True
+
+        for user in users:
+            if str(username) == user['username'] and base64.b64decode(user['password_hash']) == argon2.argon2_hash(password=str(password), salt=user['salt'], t=16, m=8, p=1, buflen=128, argon_type=argon2.Argon2Type.Argon2_i):
+                new_session_value = str(uuid.uuid4())
+                user['session'] = new_session_value
+                current_user = user['username']
+                action_login = False
+                break
+
+
+        resp = make_response(render_template('onlinebanking.html',transactions = transactions, current_user = current_user, action_login = action_login))
+        resp.set_cookie('session-cookie', new_session_value)
+        return resp
+
+    def getUserFromSession(session):
+        username = ''
+
+        for user in users:
+            if session == user['session']:
+                username = user['username']
+                break
+
+        return username
+
+    @app.route('/onlinebanking', methods=['GET'])
+    def onlinebanking():
+
+        action_login = True
+
+        session_cookie = request.cookies.get('session-cookie')
+        current_user = getUserFromSession(session_cookie)
+
+        if current_user == 'oma' or current_user == 'henk':
+            action_login = False
+        else:
+            action_login = True
+
+        resp = make_response(render_template('onlinebanking.html',transactions = transactions, current_user = current_user, action_login = action_login))
+
+        return resp
+
+    @app.route('/transfer', methods=['POST'])
+    def transfer():
+        to_value = request.form.get('to')
+        # from_value = request.form.get('from')
+        amount_value = request.form.get('amount')
+        description_value = request.form.get('description')
+
+        session_cookie = request.cookies.get('session-cookie')
+        current_user = getUserFromSession(session_cookie)
+
+        if current_user != to_value and (to_value == 'henk' or to_value == 'oma'):
+            transactions.append({'to':to_value,'from':current_user,'amount':amount_value,'description':description_value})
+
+        return redirect("/onlinebanking")
+</pre>
+
+
+</body>
+</html>
