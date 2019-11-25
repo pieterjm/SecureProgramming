@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Web shop</h1>
+
+This shop sells a limited selection of high quality fruit juices. Come in and buy some!
+
+<table border=0>
+  <tr><td colspan=2><b>Item</td><td><b>In Basket</td></tr>
+{% for item in basket %}
+  <tr><td>{{basket[item].description}}</td><td>[<A href="/shop?action=buy&item={{item}}">Buy</a>][<A href="/shop?action=remove&item={{item}}">Remove</a>]</td><td>&nbsp;&nbsp;&nbsp;{{basket[item].quantity}}</td></tr>
+  {% endfor %}
+</table>
+
+There are {{credits}} credits available to buy Juice!
+
+{% if credits >= baskettotal %}
+<p>There are sufficient credits available to by 
+[<a href="/shop?action=checkout">Checkout</a>]</p>
+{% else %}
+<p>Insufficient credits available. Remove items from your basket!</P>
+{% endif %}
+
+
+<h1>Problem</h1>
+While it is only allowed to by 10 juices, a flaw in the business logic makes it possible to order way more than that. Locate the problem in the source code and propsoe a mitigation.
+
+<pre>
+@app.route('/shop', methods=['GET'])
+def shop():
+    if request.method == 'GET':
+        if request.args.get("action") == "buy":
+            item = request.args.get("item")
+            if item in basket:                
+                basket[item]['quantity'] = basket[item]['quantity'] + 1
+
+            baskettotal = 0
+            for item in basket:
+                baskettotal = baskettotal + basket[item]['quantity']
+
+            return render_template('shop.html', basket = basket, credits=10, baskettotal=baskettotal)
+                            
+        if request.args.get("action") == "remove":
+            item = request.args.get("item")
+            if item in basket:
+                if basket[item]['quantity'] > 0:
+                    basket[item]['quantity'] = basket[item]['quantity'] - 1
+
+            baskettotal = 0
+            for item in basket:
+                baskettotal = baskettotal + basket[item]['quantity']
+
+            return render_template('shop.html', basket = basket, credits=10, baskettotal=baskettotal)
+
+        if request.args.get("action") == "checkout":
+            baskettotal = 0
+            order = {}
+            for item in basket:
+                order[item] = { 'description':basket[item]['description'], 'quantity':basket[item]['quantity'] }                            
+                baskettotal = baskettotal + basket[item]['quantity']
+                basket[item]['quantity'] = 0
+                
+            return render_template('checkout.html', basket = order)
+                        
+    return render_template('shop.html', basket = basket, credits=10, baskettotal=0)
+  
+</pre>
+
+	    
+
+</body>
+</html>

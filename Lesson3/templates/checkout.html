@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Web shop</h1>
+
+<p>Thanks for buying, visit us again or by some more <a href="/shop">here</a>.</p>
+
+<h2>Order summary</h2>
+<table border=1>
+  <tr><td><b>Item</b></td><td><b>Amount</b></td></tr>
+{% for item in basket %}
+  <tr><td>{{basket[item].description}}</td><td>{{basket[item].quantity}}</td></tr>
+  {% endfor %}
+</table>
+
+
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Document download</h1>
+
+The following documents are available for public download as their contents are not confidential.
+
+<ul>
+  <li><a href="/get-document/MjE3NjEy">Document 1</a>
+  <li><a href="/get-document/MjE3NjEz">Document 2</a>
+  <li><a href="/get-document/MjE4NTI0">Document 3</a>
+  <li><a href="/get-document/MjE2NTMy">Document 4</a>
+</ul>
+
+<h1>Problem</h1>
+
+Find the programming flaw that makes it possible to download other (confidential) documents, and propose a mitigation to fix the problem.
+
+<h2>Source code</h2>
+
+<pre>
+@app.route("/get-document/<documentid>")
+def get_document(documentid):
+    try:
+        fileid = base64.b64decode(documentid).decode()
+        return send_from_directory("./documents", filename=fileid, as_attachment=True, attachment_filename=documentid)
+    except FileNotFoundError:
+        abort(404)
+
+@app.route('/document', methods=['GET'])
+def document():
+    return render_template('document.html')  
+</pre>
+
