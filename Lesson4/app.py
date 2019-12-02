@@ -35,12 +35,15 @@ def b2b():
         except:
             file = None
 
-        if file and file.filename.endswith('.xml'):
-            if schema.is_valid(file.read().decode('utf-8')):
-                result = "The document is valid"
-        else:
-            file = None
-
+        try:
+            if file and file.filename.endswith('.xml'):
+                if schema.is_valid(file.read().decode('utf-8')):
+                    result = "The document is valid"
+            else:
+                file = None
+        except:
+            result = "Parse error"
+            
         return render_template('b2b.html', verificationresult = result)
 
 @app.route('/weakpassword')
