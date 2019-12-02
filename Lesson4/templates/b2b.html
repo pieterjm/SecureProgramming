@@ -1,0 +1,43 @@
+<h1>B2B interface</h1>
+
+<p>
+  On this page, you can test the functionality of our B2B interface. The B2B interface processes XML formatted documents. A sample document can be downloaded <a href="/static/sample.xml">here</a>. The form below can be used to verify if your XML document is formatted correctly according to the <a href="/static/note.xsd">Note</a> schema.
+</p>
+
+<form action = "/b2b" method = "POST" enctype = "multipart/form-data">
+  <input type = "file" name = "file" />
+  <input type = "submit" name="Verify" value="Verifiy"/>
+</form>
+
+<h3>Verification result: {{verificationresult}}</h3>
+
+<h2>Problem</h2>
+Find the root cause in this XML validation service that may trigger al kinds of critical issues like denial of service and information disclosure. Propose a mitigation that fixes the problem.
+
+<h2>Source code</h2>
+<pre>
+@app.route('/b2b', methods=['GET','POST'])
+def b2b():
+    if request.method == 'GET':
+        return render_template('b2b.html', verificationresult = '')
+    if request.method == 'POST':
+        try:
+            schema = xmlschema.XMLSchema('static/note.xsd')
+        except:
+            return render_template('b2b.html', verificationresult = 'Internal problem while loading XML schema. Please contact administration')
+
+        result = "The file is not valid"
+        
+        try:
+            file = request.files['file']
+        except:
+            file = None
+
+        if file and file.filename.endswith('.xml'):
+            if schema.is_valid(file.read().decode('utf-8')):
+                result = "The document is valid"
+        else:
+            file = None
+
+        return render_template('b2b.html', verificationresult = result)  
+</pre>

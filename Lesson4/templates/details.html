@@ -1,0 +1,10 @@
+<h1>Active processes</h1>
+<P>Process details</p>
+
+<table border=1>
+<tr><td>PID</td><td>TIME</td><td>Command</td></tr>
+{% for proc in processes %}
+<tr><td>{{proc.pid}}</td><td>{{proc.time}}</td><td>{{proc.command}}</td></tr>
+{% endfor %}
+</table>
+

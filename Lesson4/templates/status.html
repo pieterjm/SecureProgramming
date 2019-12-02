@@ -1,0 +1,44 @@
+<H1>Process viewer</h1>
+
+<p>This is a rudimentary process viewer that provides a list of running processes. Always handy to check if everything is still ok. You can click the 'Details' button to get more info on each process.</p>
+
+<form method="POST" action="/details">
+<table border=1>
+<tr><td>User</td><td>PID</td><td>%CPU</td><td>&nbsp;</td></tr>
+{% for proc in processes %}
+<tr><td>{{proc.user}}</td><td>{{proc.pid}}</td><td>{{proc.cpu}}</td><td><button type="submit" name="pid" value="{{proc.pid}}">Details</button></td></tr>
+{% endfor %}
+</table>
+</form>
+
+<h2>Problem</h2>
+While this process viewer is a handy tool, it is affected by a vulnerability that makes it possible to shutdown the service. Find the problem, the root cause(s) in the source code and propose mitigations how to resolve the problem.
+
+<h2>Source code</h2>
+<pre>
+@app.route('/status')
+def status():
+    processes = json.loads(subprocess.check_output("/bin/ps aux | /usr/bin/awk -v OFS=, '{print $1, $2, $3}' |  /usr/bin/jq -R 'split(\",\") | {user: .[0], pid: .[1], cpu: .[2]}' | /usr/bin/jq -s .",shell=True))
+    selection = []
+    processes.pop(0)
+    for proc in processes:
+        if float(proc['cpu']) > 0:
+            selection.append(proc)
+    return render_template('status.html', processes = selection)
+
+@app.route('/details', methods=['POST'])
+def defauls():
+    pid = str(request.form.get('pid'))
+    try:
+        processes = json.loads(subprocess.check_output("/bin/ps -p %s | /usr/bin/awk -v OFS=, '{print $1, $3, $4}' |  /usr/bin/jq -R 'split(\",\") | {pid: .[0], time: .[1], command: .[2]}' | /usr/bin/jq -s ." % (pid) ,shell=True))
+        processes.pop(0)
+        return render_template('details.html', processes = processes)
+    except:
+        processes = json.loads(subprocess.check_output("/bin/ps aux | /usr/bin/awk -v OFS=, '{print $1, $2, $3}' |  /usr/bin/jq -R 'split(\",\") | {user: .[0], pid: .[1], cpu: .[2]}' | /usr/bin/jq -s .",shell=True))
+        selection = []
+        processes.pop(0)
+        for proc in processes:
+            if float(proc['cpu']) > 0:
+                selection.append(proc)
+        return render_template('status.html', processes = selection)  
+</pre>
