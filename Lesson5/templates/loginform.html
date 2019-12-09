@@ -1,0 +1,40 @@
+
+<H1>Login form</h1>
+
+<p>
+  Please login at the form below.
+</p>
+
+<form method="POST" action="login">
+  <table border="0">
+    <tr><td>Username</td><td><input name="username"></td></tr>
+    <tr><td>Password</td><td><input name="password"></td></tr>
+    <tr><td>&nbsp;</td><td><input type="submit" name="Login" value="Login"></td></tr>
+  </table>
+</form>
+
+{% if result %}
+{{result}}
+{% endif %}
+
+<H2>Problem</h2>
+While the login function above uses a strong hashing algorithm and is difficult to reverse, it contains at least one weakness. Identify the problem and propose a mitigation in (pseudo)code how to resolve the problem.
+
+<h2>Source code</h2>
+<pre>
+@app.route('/login', methods=['GET','POST'])
+def b2b():
+    if request.method == 'GET':
+        return render_template('loginform.html', result = None)
+    if request.method == 'POST':
+        try:
+            hash = hashlib.sha256(request.form.get('password').encode()).hexdigest()
+            print(hash, file=sys.stderr)
+            if hash == pwhash:
+                print("equal", file=sys.stderr)
+                return render_template('loggedin.html')
+            else:
+                return render_template('loginform.html', result = 'Invalid login')        
+        except:
+            return render_template('loginform.html', result = 'Invalid login')              
+</pre>
