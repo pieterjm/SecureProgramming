@@ -1,0 +1,78 @@
+<h1>God mode</h1>
+<p>This program takes some input, does some hefty calculations, and returns the result.</p>
+
+<form method="POST" action="/mode">
+  <table border=0>
+    <tr><td>Input</td><td><input name="input" value=""></td></tr>
+    <tr><td></td><td><input type="submit" value="Calculate"></td></tr>
+  </table>
+</form>
+
+{% if result %}
+Result: {{result}} <br>
+{% endif %}
+
+{% if mode %}
+Program mode: {{mode}} <br>
+{% endif %}
+
+<h2>Problem</h2>
+<p>While the program is supposed to run in normal mode, there is also a god mode available for debugging purposes. Find the input that makes the program go into this god mode.</p>
+
+<h2>Source code</h2>
+
+<i>app.py</i>
+<pre>
+@app.route('/mode', methods=['GET','POST'])
+def mode():
+    mode = 'Running in normal mode'
+    result = None
+    if request.method == 'GET':
+        return render_template('mode.html',result=None, mode=mode)
+    if request.method == 'POST':
+        input = request.form.get('input');
+        if input != None and re.match("^[A-Za-z0-9]+$",input):
+            result = os.system("./util %s" % input)
+            if ( result == 512 ):
+                mode = 'Running in god mode'
+            else:
+                time.sleep(3)
+            result = len(input)
+        else:
+            result = None
+        return render_template('mode.html',result=result, mode=mode)  
+</pre>
+
+<i>util.c</i>
+<pre>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char **argv)  
+{
+  volatile int debug;
+  char buffer[64];
+
+  // change debug to enable debugging in god mode
+  debug = 0x00;
+
+  // one argument is required
+  if ( argc == 2 ) {
+    strcpy(buffer, argv[1]);
+  } else {
+    exit(-1);
+  }
+
+  fprintf(stderr,"debug = %08x\n",debug);
+  
+  if(debug == 0x50 ) {
+    exit(2);
+  } else {
+    exit(1);
+  }
+}
+
+
+</pre>

@@ -2,7 +2,7 @@
 <html>
   <body>
     <h1>Upload a file</h1>
-        
+    <p>The following form is used to upload an image to the server. Only jpeg en gif images are allowed.</p>
       <form action = "/upload" method = "POST" 
          enctype = "multipart/form-data">
          <input type = "file" name = "file" />
@@ -15,7 +15,7 @@
 
 <h1>Source code</h1>
 
-Where is the problem?
+Where is the problem the makes it possible to upload a file that is not an image?
       
       <pre>
 @app.route('/upload', methods=['GET','POST'])
@@ -25,11 +25,12 @@ def upload():
 
     f = request.files['file']
 
-    if f.content_type != 'image/jpeg' and f.content_type != 'image/gif':
-        return render_template('upload.html', result = "Only uploading of images is allowed")
-        
-    f.save('static/' + f.filename)
-        return render_template('upload.html', result = 'File uploaded succesfully.')
+    if f.content_type == 'image/jpeg' or f.content_type == 'image/gif':        
+        f.save('static/' + f.filename)
+        return render_template('upload.html', result = "File saved")
+
+    return render_template('upload.html', result = "File upload not accepted")
+
 </pre>
       
    </body>

@@ -10,6 +10,10 @@ import sqlite3
 from jinja2 import Markup
 import sys
 import xmlschema
+import os
+
+xmlschema.limits.MAX_MODEL_DEPTH = 6
+
 
 app = Flask(__name__,static_folder='static')
 app.jinja_env.globals['include_raw'] = lambda filename : escape(app.jinja_loader.get_source(app.jinja_env, filename)[0])
@@ -97,6 +101,8 @@ def defauls():
         return render_template('status.html', processes = selection)
     
 if __name__ =='__main__':
-    app.run(debug=True, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(threaded=True, host='0.0.0.0', port=port)
+
 
 

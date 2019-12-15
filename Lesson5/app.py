@@ -3,6 +3,7 @@ from jinja2 import Markup
 import hashlib
 import sys
 import re
+import os
 
 app = Flask(__name__,static_folder='static')
 app.jinja_env.globals['include_raw'] = lambda filename : escape(app.jinja_loader.get_source(app.jinja_env, filename)[0])
@@ -47,13 +48,15 @@ def decode():
                         decoded += key[ord(c.upper()) - 65]
                     else:
                         decoded += c
-                return render_template('encoded.html', result = decoded)
+                return render_template('encoded.html', result = decoded, key=key, data=data)
             else:
                 return render_template('encoded.html', result = 'Invalid data')
         else:
             return render_template('encoded.html', result = 'Invalid key')
 
 if __name__ =='__main__':
-    app.run(debug=True, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(threaded=True, host='0.0.0.0', port=port)
+    
 
 

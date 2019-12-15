@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import random
 import time
 import argon2
+import os
 
 app = Flask(__name__)
 
@@ -60,13 +61,13 @@ def upload():
 
     f = request.files['file']
 
-    if f.content_type != 'image/jpeg' and f.content_type != 'image/gif':
-        return render_template('upload.html', result = "Only uploading of images is allowed")
-        
-    f.save('static/' + f.filename)
-    return render_template('upload.html', result = 'File uploaded succesfully.')
-    
+    if f.content_type == 'image/jpeg' or f.content_type == 'image/gif':
+        f.save('static/' + f.filename)
+        return render_template('upload.html', result = 'File uploaded succesfully.')
+            
+    return render_template('upload.html', result = "File upload not accepted")
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(threaded=True, host='0.0.0.0', port=port)
 

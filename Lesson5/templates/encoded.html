@@ -1,14 +1,14 @@
 <h1>Cryptanalysis</h1>
 <p>
-  As the holidays near, Santa Claus is preparing for Christmas with his helping friends, the elves. One of Santa's tasks is to write letters to all children. As time is limited, Santa, after writing a letter, gives the letter to an elve. The elve then brings the letter to its final destination. The letter itself is encrypted. This in case a letter is lost on its way to a child.
+  As the holidays near, Santa Claus is preparing for Christmas with his helping friends, the elves. One of Santa's tasks is to write letters to all children. As time is limited, Santa, after writing a letter, gives the letter to an elf. The elf then brings the letter to its final destination. The letter itself is encrypted. This in case a letter is lost on its way to a child.
       
 </p>
-The elve, responsible for IT, created a handy tool that is used to decrypt each letter into readable plain-text data. For succesful decryption, a valid decrypition key is required.
+The elf, responsible for IT, created a handy tool that is used to decrypt each letter into readable plain-text data. For succesful decryption, a valid decrypition key is required.
 </p>
 <form method="POST" action="/decode">
   <table border="0">
-    <tr valign="top"><td>Decryption key:</td><td><input name="key" size="26" maxlength="26"></td></tr>
-    <tr valign="top"><td>Encrypted data:</td><td><textarea name="data" rows="20" cols="40"></textarea></td></tr>
+    <tr valign="top"><td>Decryption key:</td><td><input name="key" size="26" maxlength="26" value="{{key}}"></td></tr>
+    <tr valign="top"><td>Encrypted data:</td><td><textarea name="data" rows="20" cols="40">{{data}}</textarea></td></tr>
     <tr valign="top"><td></td><td><input type="submit" value="Decrypt" name="Decrypt"></td></tr>
   </table>
 </form>
@@ -20,7 +20,7 @@ Decoding result: {{result}}
 
 <h2>Problem</h2>
 <p>
-  But then something terrible happened. One of the elves, on its way to InHolland in Haarlem, dropped a letter on his way to a little child. Santa is searching for the elve, and only the letter itself was recovered. You can download the letter <a href="/static/letterfromsanta.txt">here</a>. The decryption key is gone, and there is a child desparately waiting for a message from Santa! Please help, find the decryption key and recover the message. 
+  But then something terrible happened. One of the elves, on its way to InHolland in Haarlem, dropped a letter on his way to a little child. Santa is searching for the elf, and only the letter itself was recovered. You can download the letter <a href="/static/letterfromsanta.txt">here</a>. The decryption key is gone, and there is a child desparately waiting for a message from Santa! Please help, find the decryption key and recover the message. 
 </p>
 
 
