@@ -9,6 +9,7 @@ COPY . /app
 
 RUN pip install -r requirements.txt
 
+RUN mkdir -p /app/static
 
 ENTRYPOINT ["python"]
 
